@@ -1,10 +1,12 @@
 
-const HTTP = require('./http.js');
+const Employee = require('./employee.js');
+const fetch = require("node-fetch")
+
 const express = require ('express');
-const uniqID = require('uniqid');
 const Joi = require('joi');
 
-//import Joi from 'joi';
+const quoteURL = "https://ron-swanson-quotes.herokuapp.com/v2/quotes";
+const jokeURL = "http://api.icndb.com/jokes/random";
 
 
 const app = express();
@@ -44,34 +46,61 @@ app.put(resourceURL, updateEmployeeRH);
 app.delete(resourceURL, deleteEmployeeRH);
 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // GET request Handlers
+// //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// function getListOfEmployeesRH(req,res){
+//     console.log(`Endpoint requested: ${req.originalUrl}`);
+//     res.send(JSON.stringify(employees));
+// }
 
-
-
-// POST request
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// POST request Handlers
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function postEmployeeRH(req, res){
     console.log(`Endpoint requested: ${req.originalUrl}`);
     
-    // Validate user
+    // Validate user input
     const  {error} = validateEmployee(req.body);
     if (error){
         res.status(400).send(error.details[0].message);
         return;
     }
 
-    console.log(getQuote());
-
+    createEmployee(req.body)
+        .then ( newEmployee =>{
+            const employeeObj = newEmployee.toString();
+            employees.push(employeeObj);
+            res.send(employeeObj);
+        })
+        .catch(err =>{
+            console.log(err);
+            res.status(400).send(err);
+        });
 
 };
 
 
-function getListOfEmployeesRH(){};
-function getEmployeeRH(){};
-function updateEmployeeRH(){};
-function deleteEmployeeRH(){};
+async function createEmployee(person){
+    // get joke
+    const jokeResponse = await fetch(jokeURL);
+    const jokeData = await jokeResponse.json();
+    const joke = jokeData.value.joke;
 
-
+    // Get Quote
+    const quoteResponse = await fetch(quoteURL);
+    const quoteData = await quoteResponse.json();
+    const quote = quoteData[0];
+   
+    // Create a new Employee
+    return new Employee( person.firstName,
+        person.lastName,
+        person.hireDate,
+        person.role,
+        person.joke = joke,
+        person.quote = quote );
+}
 
 function validateEmployee(employee){
     const schema = {
@@ -89,21 +118,20 @@ function validateEmployee(employee){
 
 
 
+
+
+function getListOfEmployeesRH(){};
+function getEmployeeRH(){};
+function updateEmployeeRH(){};
+function deleteEmployeeRH(){};
+
+
+
+
 function getListOfEmployeesRH(req,res){
-    console.log("LIFE CHECK");
-    res.send("I'm alive");
+    console.log("HEALTH CHECK");
+    console.log(`Endpoint requested: ${req.originalUrl}`);
+    res.send(JSON.stringify(employees));
 };
 
 
-function getQuote(){
-    const http = new HTTP;
-
-    http.get("https://ron-swanson-quotes.herokuapp.com/v2/quotes")
-        .then(data =>{
-            console.log(data);
-            return data;
-        })
-        .catch( err => console.log(err));
-
-    
-}
