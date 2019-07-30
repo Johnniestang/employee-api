@@ -1,10 +1,5 @@
 
 const uniqID = require('uniqid');
-const HTTP = require('./http.js');
-const quoteURL = "https://ron-swanson-quotes.herokuapp.com/v2/quotes";
-const jokeURL = "http://api.icndb.com/jokes/random";
-const jokeObject = "value.joke";
-
 
 class Employee{
 
@@ -35,56 +30,78 @@ class Employee{
         }
     }
 
-    getFirstName () {
-        return this._firstName;
+    toJSON(){
+        return{
+            "id" : this._id,
+            "firstName" : this._firstName,
+            "lastName" : this._lastName,
+            "hireDate" : this._hireDate,
+            "role" : this._role,
+            "joke" : this._joke,
+            "quote": this._quote
+        }
     }
 
-    getLastName(){
-        return this._lastName;
-    }
-
-    getHireDate(){
-        return this._hireDate;
-    }
-
-    getRole(){
-        return this._role;
-    }
-
-    getQuote(){
-        return this._quote;
-    }
-
+    
     generateId(){
         return uniqID.process();
     }
 
 
-    __getJoke(jokeUrl){
-        try{
-         //   const jokeObject = this.fetchData(jokeUrl);
-            console.log("-----------------------")
-            console.log(jokeObject.value);
-        } catch (err){
-            return "Joke not available";
-        }
-        return jokeObject.value.joke;
+    update(person){
+        this.firstName = person.firstName;
+        this.lastName = person.lastName;
+        this.hireDate = person.hireDate;
+        this.role = person.role;
     }
 
-    // async getFunItems(jokeUrl, quoteUrl){
-    //     //const http = new HTTP;
-    //     // http.get(url)
-    //     //     .then(data =>{
-    //     //         return data.value.joke;
-    //     //     })
-    //     //     .catch( err => console.log(err));
+    // Getters
+    get firstName () {
+        return this._firstName;
+    }
 
-    //     // Get Joke
-    //     const jokeResponse = await fetch(jokeUrl);
-    //     const data = await jokeResponse.json();
-    //      console.log(data);
-           
-    // }
+    get lastName(){
+        return this._lastName;
+    }
+
+    get hireDate(){
+        return this._hireDate;
+    }
+
+    get role(){
+        return this._role;
+    }
+
+    get quote(){
+        return this._quote;
+    }
+
+    get joke(){
+        return this._joke;
+    }
+
+    get id(){
+        return this._id;
+    }
+
+
+    // Setters
+    set firstName (firstName) {
+        this._firstName = firstName;
+    }
+
+    set lastName(lastName){
+        this._lastName = lastName;
+    }
+
+    set hireDate(hireDate){
+        this._hireDate = hireDate;
+    }
+
+    set role(role){
+        this._role = role;
+    }
+
 
 
 }

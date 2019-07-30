@@ -1,14 +1,14 @@
 
-const Employee = require('./employee.js');
-const fetch = require("node-fetch")
-
-const express = require ('express');
-const Joi = require('joi');
+const Employee  = require('./employee.js');
+const fetch     = require("node-fetch")
+const express   = require('express');
+const Joi       = require('joi');
 
 const quoteURL = "https://ron-swanson-quotes.herokuapp.com/v2/quotes";
 const jokeURL = "http://api.icndb.com/jokes/random";
 
 
+// Start up th Express Framework
 const app = express();
 app.use(express.json())
 
@@ -40,26 +40,30 @@ app.get(`${resourceURL}:id`, getEmployeeRH);
 app.post(resourceURL, postEmployeeRH);
 
 //PUT request
-app.put(resourceURL, updateEmployeeRH);
+app.put(`${resourceURL}:id`, updateEmployeeRH);
 
 // DELETE request
-app.delete(resourceURL, deleteEmployeeRH);
+app.delete(`${resourceURL}:id`, deleteEmployeeRH);
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // GET request Handlers
 // //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// function getListOfEmployeesRH(req,res){
-//     console.log(`Endpoint requested: ${req.originalUrl}`);
-//     res.send(JSON.stringify(employees));
-// }
+
+
+function getListOfEmployeesRH(req,res){
+    console.log("HEALTH CHECK");
+    console.log(`Endpoint requested: ${req.originalUrl}`);
+    res.send(JSON.stringify(employees));
+};
+
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // POST request Handlers
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 function postEmployeeRH(req, res){
-    console.log(`Endpoint requested: ${req.originalUrl}`);
+    console.log(`POST Endpoint requested: ${req.originalUrl}`);
     
     // Validate user input
     const  {error} = validateEmployee(req.body);
@@ -70,9 +74,11 @@ function postEmployeeRH(req, res){
 
     createEmployee(req.body)
         .then ( newEmployee =>{
-            const employeeObj = newEmployee.toString();
-            employees.push(employeeObj);
-            res.send(employeeObj);
+            // const employeeObj = newEmployee.toString();
+            // employees.push(employeeObj);
+            // res.send(employeeObj);            ;
+            employees.push(newEmployee);
+            res.send(JSON.stringify(newEmployee));
         })
         .catch(err =>{
             console.log(err);
@@ -107,31 +113,57 @@ function validateEmployee(employee){
         firstName: Joi.string().required(),
         lastName: Joi.string().required(),
         hireDate: Joi.date().iso().max('now'),
-        // role: Joi.string().regex(/^(CEO|VP|MANAGER|LACKEY)$/).error ( errors =>{
-        //     return {message: "Role must be either one of the following: CEO, VP, MANAGER, LACKEY"}
-            role: Joi.string().regex(/^(CEO|VP|MANAGER|LACKEY)$/).error ( errors =>{
-                return {message: `Role must be either one of the following: CEO|VP|MANAGER|LACKEY`}
+        role: Joi.string().regex(/^(CEO|VP|MANAGER|LACKEY)$/).error ( errors =>{
+            return {message: `Role must be either one of the following: CEO|VP|MANAGER|LACKEY`}
         })
     }
     return Joi.validate(employee,schema);
 }
 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// PUT request Handlers
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function updateEmployeeRH(req,res){
+    console.log(`PUT Endpoint requested: ${req.originalUrl}`);
+    console.log(req.params);
+    // Find Employee based on ID parameter
+    const id = req.params.id;
+    //const id = req.params.id;
+    console.log(`${id}<---`);
+        const foundEmployee = employees.find( person =>{
+
+        const personId = person.id;
+        console.log(personId);
+       
+        return person.id === id;
+    });
+    
+
+console.log(foundEmployee);
+    if (foundEmployee === undefined){
+        res.status(404).send(`The employee with id ${id} could not be located`);
+        return;
+    }
+
+    // validate user input and update
+    const updatedEmployee = req.body;
+    const {error} = validateEmployee(updatedEmployee);
+    if (error){
+        res.status(400).send(error.details[0].message);
+    } else {
+        foundEmployee.update(updatedEmployee);
+        res.send(JSON.stringify(foundEmployee));
+    }
+
+};
 
 
-
-function getListOfEmployeesRH(){};
 function getEmployeeRH(){};
-function updateEmployeeRH(){};
+
 function deleteEmployeeRH(){};
 
 
 
-
-function getListOfEmployeesRH(req,res){
-    console.log("HEALTH CHECK");
-    console.log(`Endpoint requested: ${req.originalUrl}`);
-    res.send(JSON.stringify(employees));
-};
 
 
