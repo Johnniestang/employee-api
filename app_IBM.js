@@ -57,6 +57,20 @@ function getListOfEmployeesRH(req,res){
     res.send(JSON.stringify(employees));
 };
 
+function getEmployeeRH(req,res){
+    console.log(`GET Endpoint requested with ID: ${req.originalUrl}`);
+
+    // Find Employee based on ID parameter
+    const id = req.params.id;
+    const foundEmployee = findEmployee(id) 
+    if (foundEmployee === null){
+        res.status(404).send(`The employee with id ${id} could not be located`);
+        return;
+    }
+
+    res.send(JSON.stringify(foundEmployee));
+
+};
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,17 +122,6 @@ async function createEmployee(person){
         person.quote = quote );
 }
 
-function validateEmployee(employee){
-    const schema = {
-        firstName: Joi.string().required(),
-        lastName: Joi.string().required(),
-        hireDate: Joi.date().iso().max('now'),
-        role: Joi.string().regex(/^(CEO|VP|MANAGER|LACKEY)$/).error ( errors =>{
-            return {message: `Role must be either one of the following: CEO|VP|MANAGER|LACKEY`}
-        })
-    }
-    return Joi.validate(employee,schema);
-}
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,22 +129,11 @@ function validateEmployee(employee){
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function updateEmployeeRH(req,res){
     console.log(`PUT Endpoint requested: ${req.originalUrl}`);
-    console.log(req.params);
+
     // Find Employee based on ID parameter
     const id = req.params.id;
-    //const id = req.params.id;
-    console.log(`${id}<---`);
-        const foundEmployee = employees.find( person =>{
-
-        const personId = person.id;
-        console.log(personId);
-       
-        return person.id === id;
-    });
-    
-
-console.log(foundEmployee);
-    if (foundEmployee === undefined){
+    const foundEmployee = findEmployee(id) 
+    if (foundEmployee === null){
         res.status(404).send(`The employee with id ${id} could not be located`);
         return;
     }
@@ -159,9 +151,61 @@ console.log(foundEmployee);
 };
 
 
-function getEmployeeRH(){};
 
-function deleteEmployeeRH(){};
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// DELETE request Handlers
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+function deleteEmployeeRH(req,res){
+    console.log(`DELETE Endpoint requested with ID: ${req.originalUrl}`);
+
+    // Find Employee based on ID parameter
+    const id = req.params.id;
+    const foundEmployee = findEmployee(id) 
+    if (foundEmployee === null){
+        res.status(404).send(`The employee with id ${id} could not be located`);
+        return;
+    }
+
+    // remove entry from data
+    const index = employees.indexOf(foundEmployee);
+    employees.splice(index,1);
+
+    res.send(foundEmployee);
+
+}
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Helpers/Utilities
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+function validateEmployee(employee){
+    const schema = {
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
+        hireDate: Joi.date().iso().max('now'),
+        role: Joi.string().regex(/^(CEO|VP|MANAGER|LACKEY)$/).error ( errors =>{
+            return {message: `Role must be either one of the following: CEO|VP|MANAGER|LACKEY`}
+        })
+    }
+    return Joi.validate(employee,schema);
+}
+
+
+function findEmployee(id){
+    const employee = employees.find( person =>{
+        return person.id === id;
+    });
+    
+    if (employee === undefined){
+        return null;
+    }
+
+    return employee;
+}
+
+
 
 
 
