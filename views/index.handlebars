@@ -20,17 +20,42 @@
             <span class="px-2"><input type="radio" name = "role" value="CEO" >CEO</input></span>
             <span class="px-2"><input type="radio" name = "role" value="VP">VP</input></span>
             <span class="px-2"><input type="radio" name = "role" value="MANAGER">MANAGER</input></span>
-            <span class="px-2"><input type="radio" name = "role" value="LACKY" checked >LACKY</input></span>
+            <span class="px-2"><input type="radio" name = "role" value="LACKEY" checked >LACKEY</input></span>
         </div>
     </div>
 
-    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+    <button type="submit" class="btn btn-primary btn-block">Add Employee</button>
 </form>
 </div>
 
-<h3> Existing Employees</h3>
-<ul class=list-group>
+<h3 class="text-center "> Existing Employees</h3>
+<hr>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Hire Date</th>
+            <th scope="col">Role</th>
+            <th scope="col">Joke</th>
+            <th scope="col">Quote</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each employees}}
+        <tr>
+            <td>{{this.firstName}}</td>
+            <td>{{this.lastName}}</td>
+            <td>{{this.hireDate}}</td>
+            <td>{{this.role}}</td>
+            <td>{{this.joke}}</td>
+            <td>{{this.quote}}</td>
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{!-- <ul class=list-group>
     {{#each employees}}
-    <li class=list-group-item>{{this.firstName}} {{this.lastName}}</li>
+    <li class=list-group-item col-xs-3>{{this.firstName}} {{this.lastName}}</li>
     {{/each}}
-</ul>
+</ul> --}}
