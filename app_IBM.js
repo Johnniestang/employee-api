@@ -4,13 +4,17 @@ const fetch     = require("node-fetch")
 const express   = require('express');
 const Joi       = require('joi');
 
+const logger = require('./middleware/logger');
+
 const quoteURL = "https://ron-swanson-quotes.herokuapp.com/v2/quotes";
 const jokeURL = "http://api.icndb.com/jokes/random";
 
 
-// Start up th Express Framework
+// Start up the Express Framework
 const app = express();
-app.use(express.json())
+
+// Setup middleware for logging
+app.use(logger);
 
 
 // Setup server details
@@ -52,23 +56,21 @@ app.delete(`${resourceURL}:id`, deleteEmployeeRH);
 
 
 function getListOfEmployeesRH(req,res){
-    console.log("HEALTH CHECK");
-    console.log(`Endpoint requested: ${req.originalUrl}`);
-    res.send(JSON.stringify(employees));
+    // res.send(JSON.stringify(employees));
+    res.json(employees);
 };
 
 function getEmployeeRH(req,res){
-    console.log(`GET Endpoint requested with ID: ${req.originalUrl}`);
-
     // Find Employee based on ID parameter
     const id = req.params.id;
     const foundEmployee = findEmployee(id) 
     if (foundEmployee === null){
-        res.status(404).send(`The employee with id ${id} could not be located`);
+        res.status(404).json({error: `The employee with id ${id} could not be located`});
         return;
     }
 
-    res.send(JSON.stringify(foundEmployee));
+    //res.send(JSON.stringify(foundEmployee));
+    res.json(foundEmployee);
 
 };
 
@@ -77,9 +79,12 @@ function getEmployeeRH(req,res){
 // POST request Handlers
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function postEmployeeRH(req, res){
-    console.log(`POST Endpoint requested: ${req.originalUrl}`);
-    
+
     // Validate user input
+    if (req.body === undefined){
+        res.status(400).json({error: "Missing data"});
+        return;
+    }
     const  {error} = validateEmployee(req.body);
     if (error){
         res.status(400).send(error.details[0].message);
@@ -112,7 +117,7 @@ async function createEmployee(person){
     const quoteResponse = await fetch(quoteURL);
     const quoteData = await quoteResponse.json();
     const quote = quoteData[0];
-   
+   console.log(person);
     // Create a new Employee
     return new Employee( person.firstName,
         person.lastName,
@@ -128,7 +133,6 @@ async function createEmployee(person){
 // PUT request Handlers
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function updateEmployeeRH(req,res){
-    console.log(`PUT Endpoint requested: ${req.originalUrl}`);
 
     // Find Employee based on ID parameter
     const id = req.params.id;
@@ -145,7 +149,7 @@ function updateEmployeeRH(req,res){
         res.status(400).send(error.details[0].message);
     } else {
         foundEmployee.update(updatedEmployee);
-        res.send(JSON.stringify(foundEmployee));
+        res.json(foundEmployee);
     }
 
 };
@@ -157,7 +161,6 @@ function updateEmployeeRH(req,res){
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 function deleteEmployeeRH(req,res){
-    console.log(`DELETE Endpoint requested with ID: ${req.originalUrl}`);
 
     // Find Employee based on ID parameter
     const id = req.params.id;
@@ -171,7 +174,7 @@ function deleteEmployeeRH(req,res){
     const index = employees.indexOf(foundEmployee);
     employees.splice(index,1);
 
-    res.send(foundEmployee);
+    res.json(foundEmployee);
 
 }
 
