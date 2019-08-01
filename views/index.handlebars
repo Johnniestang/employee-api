@@ -1,0 +1,36 @@
+
+<h1 class ="text-center mb-4">{{title}}</h1>
+<div class="card px-3 py-2">
+<form action="/api/employees" method="POST" class="mb-4">
+    <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" name = "firstName" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" name = "lastName" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="hireDate">Hire Date</label>
+        <input type="date" name = "hireDate" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="role">Role</label>
+        <div class="radio-inline px-3">
+            <span class="px-2"><input type="radio" name = "role" value="CEO" >CEO</input></span>
+            <span class="px-2"><input type="radio" name = "role" value="VP">VP</input></span>
+            <span class="px-2"><input type="radio" name = "role" value="MANAGER">MANAGER</input></span>
+            <span class="px-2"><input type="radio" name = "role" value="LACKY" checked >LACKY</input></span>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+</form>
+</div>
+
+<h3> Existing Employees</h3>
+<ul class=list-group>
+    {{#each employees}}
+    <li class=list-group-item>{{this.firstName}} {{this.lastName}}</li>
+    {{/each}}
+</ul>

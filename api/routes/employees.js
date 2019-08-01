@@ -2,6 +2,7 @@ const express   = require('express');
 const Joi       = require('joi');
 const fetch     = require("node-fetch")
 const Employee  = require('../../models/employee.js');
+const employees = require('../../employees');
 
 // Setup router
 const router = express.Router();
@@ -13,7 +14,7 @@ const jokeURL = "http://api.icndb.com/jokes/random";
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Data (use in memory versus database)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-const employees = [];
+//const employees = [];
 
 
 // Routes
@@ -41,9 +42,6 @@ function postEmployeeRH(req, res, next){
 
     createEmployee(req.body)
         .then ( newEmployee =>{
-            // const employeeObj = newEmployee.toString();
-            // employees.push(employeeObj);
-            // res.send(employeeObj);            ;
             employees.push(newEmployee);
             res.json(newEmployee);
         })
@@ -88,16 +86,14 @@ function getListOfEmployeesRH(req,res){
 };
 
 function getEmployeeRH(req,res){
-    // Find Employee based on ID parameter
+    
     const id = req.params.id;
     const foundEmployee = findEmployee(id) 
     if (foundEmployee === null){
         return res.status(404).json({message: `The employee with id ${id} could not be located`});
     }
 
-    //res.send(JSON.stringify(foundEmployee));
     res.json(foundEmployee);
-
 };
 
 
@@ -107,7 +103,6 @@ function getEmployeeRH(req,res){
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function updateEmployeeRH(req,res){
 
-    // Find Employee based on ID parameter
     const id = req.params.id;
     const foundEmployee = findEmployee(id) 
     if (foundEmployee === null){
@@ -134,7 +129,6 @@ function updateEmployeeRH(req,res){
 
 function deleteEmployeeRH(req,res){
 
-    // Find Employee based on ID parameter
     const id = req.params.id;
     const foundEmployee = findEmployee(id) 
     if (foundEmployee === null){
