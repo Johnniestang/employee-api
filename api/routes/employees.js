@@ -32,7 +32,6 @@ router.delete('/:id', deleteEmployeeRH);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 function postEmployeeRH(req, res, next){
 
-    console.log(req);
     // Validate user input
     if (req.body === undefined){
         return res.status(400).json({message: "Missing data"});
@@ -45,8 +44,8 @@ function postEmployeeRH(req, res, next){
     createEmployee(req.body)
         .then ( newEmployee =>{
             employees.push(newEmployee);
-            //res.status(201).json(newEmployee);
-            res.redirect('/employees');
+            res.status(201).json(newEmployee);
+            //res.redirect('/employees');
         })
         .catch(err =>{
             console.log(err);

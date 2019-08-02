@@ -1,7 +1,7 @@
 
 <h1 class ="text-center mb-4">{{title}}</h1>
 <div class="card px-3 py-2">
-<form action="/api/employees" method="POST" class="mb-4">
+<form action="/employee/submit" method="POST" class="mb-4">
     <div class="form-group">
         <label for="firstName">First Name</label>
         <input type="text" name = "firstName" class="form-control">
@@ -54,8 +54,3 @@
         {{/each}}
     </tbody>
 </table>
-{{!-- <ul class=list-group>
-    {{#each employees}}
-    <li class=list-group-item col-xs-3>{{this.firstName}} {{this.lastName}}</li>
-    {{/each}}
-</ul> --}}

@@ -5,9 +5,8 @@ const exphbs = require('express-handlebars');
 const employees = require('./employees');
 const morgan = require('morgan');
 
-
 const employeeRoutes = require('./api/routes/employees');
-const logger = require('./middleware/logger');
+const indexRoute = require('./api/routes/index');
 
 const app = express();
 
@@ -29,8 +28,9 @@ app.use(express.urlencoded({extended:false}));
 
 // Routes
 app.use( '/api/employees', employeeRoutes);
+app.use( '/employee/submit', indexRoute);
 
-// For small project will combine front in with Back  
+// For small project will combine front end with Back  
 app.get('/employees/',(req,res,) =>{
     res.render('index',{
         title: 'Employees',
@@ -43,8 +43,6 @@ app.get('/employees/',(req,res,) =>{
 app.use( (req,res) =>{
     res.status(404).send('Not Found');
 });
-
-
 
 
 
